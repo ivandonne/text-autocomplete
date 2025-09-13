@@ -2,6 +2,7 @@
 import re
 import datetime
 import json
+import pandas as pd
 
 # функция для "чистки" текстов
 def clean_string(text):
@@ -77,4 +78,24 @@ def save_results_to_file(rouge_scores, output_file, MODEL_NAME, MAX_SEQUENCE_LEN
     print(f"\nРезультаты добавлены в файл: {output_file}")
     print(f"Всего экспериментов в файле: {len(existing_data)}")
     
+
+def save_selection_to_file(tensor, mask, tokenizer, filepath):
+    def decode_tensor_to_text(tensor, tokenizer):
+        texts = []
+        for seq in tensor:
+            # Убираем padding tokens (где attention_mask = 0)
+            text = tokenizer.decode(seq, skip_special_tokens=True)
+            texts.append(text)
+        return texts
     
+    texts = decode_tensor_to_text(tensor, tokenizer)
+    masks = [m.tolist() for m in mask]
+
+    df = pd.DataFrame({
+        'text': texts,
+        'input_ids': [ids.tolist() for ids in tensor],
+        'attention_mask': masks,
+        'split': 'train'
+    })
+    
+    df.to_csv(filepath, index=False, encoding='utf-8')
