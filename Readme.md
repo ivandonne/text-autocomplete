@@ -17,12 +17,17 @@ text-autocomplete/
 │
 ├── data/
 │ └── tweets.txt # Тексты твитов из sentiment140 dataset
+│ └── tweets_small.txt # Первые 2100 твитов из tweets.txt для эксперимента на CPU
+│ └── train.csv # выборка из tweets_small для обучения модели
+│ └── val.csv   # выборка из tweets_small для валидации
+│ └── test.csv  # выборка из tweets_small для проверки
 │
 ├── src/
 │ ├── data_utils.py # Функции для обработки и очистки данных
-│ └── lstm_model.py # Реализация LSTM модели
+│ ├── lstm_model.py # Реализация LSTM модели
+│ └── models_common.py # Общие функции для обеих моделей
 │
-├── results/ # Директория для сохранения результатов
+├── results/ # Директория для сохранения результатов экспериментов
 |
 ├── models/  # веса обученных моделей
 |
@@ -95,3 +100,49 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 # Установка CPU-версии PyTorch
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 ```
+
+# Результаты эксперимента
+Из-за проблем с запуском ВМ с GPU эксперимент проводился на CPU ноутбука.
+Поэтому данные были сильно уменьшены до 2100 твитов (tweets_small.txt)
+
+## Ход обучение LSTM модели
+Для обучения использовалось 10 эпох.
+Модель быстро вышла на плато и достигла пика обучения на данном датасете.
+Функция потерь имела высокое значение порядка 6.8, ROUGE-1 порядка 0.04.
+## Примеры автодополнений
+### LSTM модель
+```
+Промпт: 'i got the i can has chezburger book from the lobo and you are not here'
+Эталон: ' to look at it wif me'
+Сгенерировано: '. I was there with the i can but i couldn't do it so i was'
+```
+### DistilGPT-2
+``` 
+Промпт: 'i got the i can has chezburger book from the lobo and you are not here'
+Эталон: ' to look at it wif me'
+Сгенерировано: ' to eat. You are here to give a reason why you should eat this food. You are here'
+```
+Видно, что дополнения трансформера грамматически верные, но сильно отличаются от эталона.
+Дополнения LSTM модели имеют плохую грамматику
+
+## Сравнение метрик
+
+```
+============================================================
+СРАВНЕНИЕ РЕЗУЛЬТАТОВ
+============================================================
+LSTM ROUGE-1:     0.0393
+Transformer ROUGE-1: 0.0714
+
+LSTM ROUGE-2:     0.0000
+Transformer ROUGE-2: 0.0128
+
+LSTM ROUGE-L:     0.0376
+Transformer ROUGE-L: 0.0691
+```
+
+Валидационная метрика ROUGE у обеих моделей очень низкая.
+Низкая метрика трансформера скорее всего связана со слабостью модели и 
+специфичностью датасета (сленг, нарушение грамматики).
+Стоит ожидать, что метрики LSTM модели будут улучшаться и превыся метрики трансформера, 
+если провести обучение на полном датасете, поскольку будет учтена его специфика.
