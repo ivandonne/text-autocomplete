@@ -94,8 +94,7 @@ def save_selection_to_file(tensor, mask, tokenizer, filepath):
     df = pd.DataFrame({
         'text': texts,
         'input_ids': [ids.tolist() for ids in tensor],
-        'attention_mask': masks,
-        'split': 'train'
+        'attention_mask': masks
     })
     
     df.to_csv(filepath, index=False, encoding='utf-8')
