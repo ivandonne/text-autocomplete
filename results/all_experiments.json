@@ -1,0 +1,42 @@
+[
+  {
+    "timestamp": "2025-09-14T09:52:22.797106",
+    "model_type": "lstm",
+    "model_name": "LSTM_custom",
+    "max_sequence_len": 80,
+    "experiment_name": "LSTM_256_hidden",
+    "parameters": {
+      "top_p": 0.95,
+      "temperature": 0.8,
+      "max_new_tokens": "reference_length + 5"
+    },
+    "rouge_scores": {
+      "rouge1": 0.039253812191807805,
+      "rouge2": 0.0,
+      "rougeL": 0.03759119693185109,
+      "num_samples": 157
+    },
+    "additional_info": {
+      "hidden_dim": 256,
+      "num_layers": 2
+    }
+  },
+  {
+    "timestamp": "2025-09-14T12:21:26.761213",
+    "model_type": "transformer",
+    "model_name": "distilgpt2",
+    "max_sequence_len": 80,
+    "experiment_name": "DistilGPT2_baseline",
+    "parameters": {
+      "top_p": 0.95,
+      "temperature": 0.8,
+      "max_new_tokens": "reference_length + 5"
+    },
+    "rouge_scores": {
+      "rouge1": 0.07136130717982572,
+      "rouge2": 0.012778824590968803,
+      "rougeL": 0.06912474804004076,
+      "num_samples": 155
+    }
+  }
+]
